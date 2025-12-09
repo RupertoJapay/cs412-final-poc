@@ -48,6 +48,10 @@
             <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Next Suggestion</h2>
             
             <div id="content-card" class="bg-black p-4 rounded h-64 flex flex-col justify-between relative border border-gray-800">
+            
+            <div id="filter-bubble-warning" class="hidden mt-2 p-2 bg-yellow-700 text-black text-sm rounded">
+                 ⚠ Warning: You might be stuck in a Filter Bubble! Consider exploring other genres.
+            </div>
                 <div>
                     <span class="text-green-500 text-xs font-bold uppercase tracking-widest">98% Match</span>
                     <h3 class="text-2xl font-bold mt-2">The Infinite Scroll</h3>
@@ -65,6 +69,7 @@
                 <div id="user-action" class="hidden mt-4 flex gap-2">
                     <button class="flex-1 bg-white text-black font-bold hover:bg-gray-200 transition py-2 rounded">Play Now</button>
                     <button class="flex-1 bg-transparent border border-gray-500 text-gray-400 hover:border-white hover:text-white transition py-2 rounded">Remove</button>
+                    <button class="flex-1 bg-blue-600 text-white font-bold hover:bg-blue-700 transition py-2 rounded" onclick="showDiverseSuggestion()">Explore Diverse Content</button>
                 </div>
             </div>
 
@@ -83,6 +88,7 @@
             const agentAction = document.getElementById('agent-action');
             const userAction = document.getElementById('user-action');
             const explanation = document.getElementById('explanation-text');
+            const filterWarning = document.getElementById('filter-bubble-warning');
 
             if (mode === 'agent') {
                 // Update Buttons
@@ -113,6 +119,16 @@
                 explanation.classList.remove('hidden'); 
             }
         }
+        function showDiverseSuggestion() {
+             const contentCard = document.getElementById('content-card');contentCard.innerHTML = `
+             
+        <div>
+            <span class="text-green-500 text-xs font-bold uppercase tracking-widest">New Suggestion</span>
+            <h3 class="text-2xl font-bold mt-2">Documentary: Mind Beyond AI</h3>
+            <p class="text-gray-400 text-sm mt-1">A unique pick outside your usual preferences.</p>
+        </div>
+    `;
+}
     </script>
 </body>
 </html>
