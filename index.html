@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS412 PoC: Netflix Control Dilemma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-black text-white font-sans p-8">
+
+    <div class="max-w-4xl mx-auto mb-10 text-center">
+        <h1 class="text-3xl font-bold mb-4 text-red-600">NETFLIX: Adaptive Control PoC</h1>
+        <p class="mb-6 text-gray-400">Argument: User Control (Mode B) vs. Agent Control (Mode A)</p>
+        
+        <div class="bg-gray-800 p-4 rounded-lg inline-block border border-gray-700">
+            <span class="mr-3 font-bold text-lg">System Logic:</span>
+            <button onclick="setMode('agent')" id="btn-agent" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition">Mode A: Agent (Implicit)</button>
+            <button onclick="setMode('user')" id="btn-user" class="px-4 py-2 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 transition ml-2">Mode B: User (Explicit)</button>
+        </div>
+        <p id="mode-desc" class="mt-4 text-yellow-400 italic">Mode A: The Agent auto-plays to maximize engagement.</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <div class="bg-gray-900 p-6 rounded-lg border border-gray-800">
+            <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">User Model Internal State</h2>
+            <div class="space-y-4">
+                <p><strong>Status:</strong> <span class="text-green-400">Online</span></p>
+                <p><strong>Predicted Mood:</strong> <span class="text-purple-400">Bored / Passive</span></p>
+                <p><strong>Algorithm Confidence:</strong> 98%</p>
+            </div>
+            
+            <div id="user-override-panel" class="hidden mt-8 p-4 bg-gray-800 rounded border border-red-600/50">
+                <h3 class="font-bold text-red-500 mb-2">⚠ Explicit User Controls</h3>
+                <p class="text-xs text-gray-400 mb-2">Override the agent's assumptions:</p>
+                <div class="flex flex-col gap-2">
+                    <button class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm text-left">Wrong Mood? Set to "Focused"</button>
+                    <button class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm text-left">Clear "Recently Watched" Cache</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-900 p-6 rounded-lg border border-gray-800 relative overflow-hidden">
+            <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Next Suggestion</h2>
+            
+            <div id="content-card" class="bg-black p-4 rounded h-64 flex flex-col justify-between relative border border-gray-800">
+                <div>
+                    <span class="text-green-500 text-xs font-bold uppercase tracking-widest">98% Match</span>
+                    <h3 class="text-2xl font-bold mt-2">The Infinite Scroll</h3>
+                    <p class="text-gray-400 text-sm mt-1">Because you watched "Social Dilemma".</p>
+                </div>
+
+                <div id="agent-action" class="mt-4">
+                    <p class="text-sm text-gray-300 mb-1">Auto-playing...</p>
+                    <div class="w-full bg-gray-700 rounded-full h-1 mb-2">
+                        <div class="bg-red-600 h-1 rounded-full animate-pulse" style="width: 85%"></div>
+                    </div>
+                    <button class="text-xs text-gray-500 underline">Cancel</button>
+                </div>
+
+                <div id="user-action" class="hidden mt-4 flex gap-2">
+                    <button class="flex-1 bg-white text-black font-bold hover:bg-gray-200 transition py-2 rounded">Play Now</button>
+                    <button class="flex-1 bg-transparent border border-gray-500 text-gray-400 hover:border-white hover:text-white transition py-2 rounded">Remove</button>
+                </div>
+            </div>
+
+            <div id="explanation-text" class="hidden mt-4 text-xs text-gray-500 border-t border-gray-800 pt-2">
+                <p><strong>Transparency Data:</strong> Recommended because 4 friends also watched this.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setMode(mode) {
+            const btnAgent = document.getElementById('btn-agent');
+            const btnUser = document.getElementById('btn-user');
+            const modeDesc = document.getElementById('mode-desc');
+            const userPanel = document.getElementById('user-override-panel');
+            const agentAction = document.getElementById('agent-action');
+            const userAction = document.getElementById('user-action');
+            const explanation = document.getElementById('explanation-text');
+
+            if (mode === 'agent') {
+                // Update Buttons
+                btnAgent.classList.replace('bg-gray-700', 'bg-red-600');
+                btnAgent.classList.replace('text-gray-300', 'text-white');
+                btnUser.classList.replace('bg-red-600', 'bg-gray-700');
+                btnUser.classList.replace('text-white', 'text-gray-300');
+
+                // Update UI for Agent Mode (Implicit)
+                modeDesc.textContent = "Mode A: The Agent auto-plays to maximize engagement.";
+                userPanel.classList.add('hidden'); 
+                agentAction.classList.remove('hidden'); 
+                userAction.classList.add('hidden'); 
+                explanation.classList.add('hidden'); 
+
+            } else {
+                // Update Buttons
+                btnUser.classList.replace('bg-gray-700', 'bg-red-600');
+                btnUser.classList.replace('text-gray-300', 'text-white');
+                btnAgent.classList.replace('bg-red-600', 'bg-gray-700');
+                btnAgent.classList.replace('text-white', 'text-gray-300');
+
+                // Update UI for User Mode (Explicit)
+                modeDesc.textContent = "Mode B: You have full control and transparency.";
+                userPanel.classList.remove('hidden'); 
+                agentAction.classList.add('hidden'); 
+                userAction.classList.remove('hidden'); 
+                explanation.classList.remove('hidden'); 
+            }
+        }
+    </script>
+</body>
+</html>
